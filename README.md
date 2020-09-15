@@ -32,7 +32,7 @@ Then you do codegen for target language using [LGNBuilder](https://github.com/17
 It looks something like this:
 
 ```bash
-LGNBuilder/Scripts/generate --lang=Swift --input /path/to/your/schema --output /path/to/your/codebase
+LGNBuilder/Scripts/generate --lang=Swift --input /your/schema --output /your/codebase
 ```
 
 If you don't specify argument `--services`, it will generate code for all services in schema. Additionally you may
@@ -221,7 +221,7 @@ NB: if you have your schema in this form (why wouldn't you do that though?), you
 using LGNBuilder flag `--emit-schema`:
 
 ```bash
-LGNBuilder/Scripts/generate --emit-schema --lang=Swift --input /path/to/your/schema --output /path/to/your/codebase
+LGNBuilder/Scripts/generate --emit-schema --lang=Swift --input /schema --output /codebase
 ```
 
 ### Field format
