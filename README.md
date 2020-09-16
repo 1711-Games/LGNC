@@ -1,5 +1,7 @@
 # LGNC — LGN Contracts
 
+![LGNC Logo](./logo.png)
+
 ## About
 LGNC is a simple yet powerful tool for building services. The general idea is you define your services and contracts in YAML format
 (see details below), then you generate a codebase for target platform and it does all the boring stuff for you like routing and request validation.
