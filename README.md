@@ -126,8 +126,13 @@ Services:
                 - UUID
             dateField:
               Type: String
-              Validators: [ Date ]
-            password1: String
+              Validators: [ Date, Callback ]
+            password1: 
+              Type: String
+              MissingMessage: "You must enter password"
+              Validators:
+                NotEmpty:
+                Message: "Empty password"
             password2:
               Type: String
               Validators:
