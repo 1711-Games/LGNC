@@ -233,7 +233,7 @@ Contract may contain following additional entries:
   limiting contract to be executed only via LGNS transport (which allows high security level) is quite handy.  Default:
   all service transports.
 * `ContentTypes` — a list of allowed content types for contract.  Default: `JSON`.
-* `IsGETSage` — indicates that contract may safely be executed via `HTTP` `GET` request (instead of `POST`) with request
+* `IsGETSafe` — indicates that contract may safely be executed via `HTTP` `GET` request (instead of `POST`) with request
   fields in URL query string. Contract request must only have `String`/`Int`/`Bool` (in `true`/`false` string form)
   fields (including `Cookie` fields in HTTP headers), otherwise it cannot be marked as `IsGETSafe` (builder would fail
   during the schema validation). Default: `false`.
