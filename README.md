@@ -15,10 +15,9 @@ first class citizen in LGNC ecosystem.
 
 HOWEVER.  Let me dispel your concerns with this: LGNC does support HTTP transport, but with some limitations:
 
-* it's always `POST` method
-* [almost] no headers
+* it's [almost] always `POST`
 * no basic auth
-* no URL params (data is always sent in body as JSON or MsgPack)
+* in `POST` requests data is always sent in body as JSON or MsgPack
 * SSL must be terminated on reverse-proxy level (nginx etc.)
 
 ## Supported languages
@@ -61,8 +60,8 @@ only one implementation — [LGNKit-Swift](https://github.com/1711-Games/LGNKit
 
 ### Complete schema example
 
-Let's consider this most comprehensive example containing two services with one contract each, and a shared section with
-two entities, with one of them (`Baz`) being used by both contracts:
+Let's consider this most comprehensive example containing two services with one and two contracts respectively, and
+a shared section with two entities, with one of them (`Baz`) being used by both contracts:
 
 ```yaml
 Shared:
@@ -151,13 +150,18 @@ Services:
             listCustomField: List[Baz]
             mapField: List[String:Bool]
             mapCustomField: List[String:Baz]
-            session: Cookie
         Response:
           Fields:
             ok: List[String]
 
   Second:
     Contracts:
+      Simple:
+        Request:
+          query: String
+          session: Cookie
+        Response:
+          List[ExtendedBaz]
       DoOtherThings:
         Request: Baz
         Response: Baz
@@ -229,6 +233,10 @@ Contract may contain following additional entries:
   limiting contract to be executed only via LGNS transport (which allows high security level) is quite handy.  Default:
   all service transports.
 * `ContentTypes` — a list of allowed content types for contract.  Default: `JSON`.
+* `IsGETSage` — indicates that contract may safely be executed via `HTTP` `GET` request (instead of `POST`) with request
+  fields in URL query string. Contract request must only have `String`/`Int`/`Bool` (in `true`/`false` string form)
+  fields (including `Cookie` fields in HTTP headers), otherwise it cannot be marked as `IsGETSafe` (builder would fail
+  during the schema validation). Default: `false`.
 
 ### Entity format
 
