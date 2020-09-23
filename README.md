@@ -151,6 +151,7 @@ Services:
             listCustomField: List[Baz]
             mapField: List[String:Bool]
             mapCustomField: List[String:Baz]
+            session: Cookie
         Response:
           Fields:
             ok: List[String]
@@ -251,6 +252,19 @@ ExtendedBaz:
     Four: Int
 ```
 
+#### Builtin entities
+
+For your convinience, LGNC has some builtin entities, namely:
+* `Empty` which is just an entity without any fields. Comes in handy when your contract should have request or response.
+* `Cookie` which represents an HTTP cookie. If your contract is executed via HTTP, and it has a `Cookie` field in
+  request, it will lookup it in headers first (which are transparently passed to contract as meta, along with request
+  entity), and if it's missing in headers, it will lookup it in request, as usual. If your contract is executed via
+  LGNS, it will lookup it directly in meta, and then in request. If your contract response has `Cookie` field, and it's
+  executed via HTTP, the cookie will transparently be set to response headers (and meta). Still, it will be available in
+  response body, as contracts are always strict on request/response format.
+
+See language implementation documentation for more details about both these entities.
+
 ### Field format
 
 As you might've noticed in examples above, field can be in two forms: string and object.  String form means that it's
@@ -262,6 +276,7 @@ just a bare type with all other properties in default (empty) state.
 * `Int` — a 64-bit LE integer
 * `Float` — a 32-bit LE float
 * `Bool` — simple 1-bit `true`/`false` boolean
+* `Cookie` — an HTTP cookie.
 * `List[ValueType]`— an ordered list of values of given type
 * `Map[KeyType:ValueType]` — an unordered map (dictionary).  `KeyType` must be `String` or `Int`.
 * Custom type from `Shared.Entities` section
@@ -307,7 +322,7 @@ Field may have following validators:
   Additionally, this validator may be in int form rather than in object: `MinLength: 3`.
 * `IdenticalWith` ensures that target `Field` value is identical with this one.  Main use case is passwords, of course.
   This validator may be in string form: `IdenticalWith: password1`.
-* `Date` is a validator without params.  It ensures that input string date is in `Shared.DateFormat` format.  If format
+* `Date` is a date validator. It ensures that input string date is in `Format`/`Shared.DateFormat` format. If format
   is not specified in `Shared.DateFormat`, it defaults to `yyyy-MM-dd kk:mm:ss.SSSSxxx`.
 * `Callback` is a special kind of validator.  It allows you to specify custom validation for the field.  Use cases are
   username/email lookup in database, custom complex validations, calling external services for confirmation etc.  There
