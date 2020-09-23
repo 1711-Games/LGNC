@@ -276,7 +276,7 @@ just a bare type with all other properties in default (empty) state.
 * `Int` — a 64-bit LE integer
 * `Float` — a 32-bit LE float
 * `Bool` — simple 1-bit `true`/`false` boolean
-* `Cookie` — a HTTP cookie.
+* `Cookie` — an HTTP cookie.
 * `List[ValueType]`— an ordered list of values of given type
 * `Map[KeyType:ValueType]` — an unordered map (dictionary).  `KeyType` must be `String` or `Int`.
 * Custom type from `Shared.Entities` section
