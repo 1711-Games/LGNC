@@ -254,9 +254,9 @@ ExtendedBaz:
 
 #### Builtin entities
 
-For your convinience, LGNC has some builtin entities, such as:
+For your convinience, LGNC has some builtin entities, namely:
 * `Empty` which is just an entity without any fields. Comes in handy when your contract should have request or response.
-* `Cookie` which represents a HTTP cookie. If your contract is executed via HTTP, and it has a `Cookie` field in
+* `Cookie` which represents an HTTP cookie. If your contract is executed via HTTP, and it has a `Cookie` field in
   request, it will lookup it in headers first (which are transparently passed to contract as meta, along with request
   entity), and if it's missing in headers, it will lookup it in request, as usual. If your contract is executed via
   LGNS, it will lookup it directly in meta, and then in request. If your contract response has `Cookie` field, and it's
