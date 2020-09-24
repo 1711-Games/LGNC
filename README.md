@@ -15,7 +15,7 @@ first class citizen in LGNC ecosystem.
 
 HOWEVER.  Let me dispel your concerns with this: LGNC does support HTTP transport, but with some limitations:
 
-* it's [almost] always `POST`
+* `GET` is available only to simple contracts; `POST` does not have such restriction
 * no basic auth
 * in `POST` requests data is always sent in body as JSON or MsgPack
 * SSL must be terminated on reverse-proxy level (nginx etc.)
@@ -61,7 +61,7 @@ only one implementation — [LGNKit-Swift](https://github.com/1711-Games/LGNKit
 ### Complete schema example
 
 Let's consider this most comprehensive example containing two services with one and two contracts respectively, and
-a shared section with two entities, with one of them (`Baz`) being used by both contracts:
+a shared section with two entities:
 
 ```yaml
 Shared:
