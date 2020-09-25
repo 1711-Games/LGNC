@@ -103,11 +103,12 @@ Services:
             stringFieldWithValidations:
               Type: String
               Validators:
-                Regex:
-                  Expression: ^[a-zA-Zа-яА-Я0-9_\\- ]+$
-                  Message: "Your input is invalid"
-                MinLength: 3
-                MaxLength: 24
+                Cumulative:
+                  Regex:
+                    Expression: ^[a-zA-Zа-яА-Я0-9_\\- ]+$
+                    Message: "Your input is invalid"
+                  MinLength: 3
+                  MaxLength: 24
                 Callback:
                   Errors:
                     - { Code: 322, Message: First callback error }
@@ -310,11 +311,11 @@ Object field must contain a `Type` entry.  Additionally, a field can have follow
 
 #### Validators
 
-A field may have an arbitrary number of validators.  All validators are executed sequentially (hence, order matters),
-failing at first error, therefore it is recommended to put lightweight validators on top, leaving heavy validators
-(`Regex`, `Callback`) to the bottom of the list.
+A field may have an arbitrary number of validators.  All validators, with one exception, are executed sequentially
+(hence, order matters), failing at first error, therefore it is recommended to put lightweight validators on top,
+leaving heavy validators (`Regex`, `Callback`) to the bottom of the list.
 
-Every validator may have a `Message` entry with an error message if it fails.
+All validators (except `Cumulative`) may have a `Message` entry with an error message if it fails.
 
 Field may have following validators:
 
@@ -342,6 +343,9 @@ Field may have following validators:
   will be just an error message without whitespaces (which isn't really beautiful, let's admit that).  **Important**:
   target language implementation _must_ ensure that a callback with an allowed list of errors can only return listed
   errors.
+* `Cumulative` is another special kind validator which groups all nested validators to be executed in parallel, without
+  fast fail. Thus, field can return arbitrary number of errors. Comes in handy for username (or password) validation.
+  
 
 ## Anti-patterns
 
