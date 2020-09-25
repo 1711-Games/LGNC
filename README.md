@@ -345,7 +345,6 @@ Field may have following validators:
   errors.
 * `Cumulative` is another special kind validator which groups all nested validators to be executed in parallel, without
   fast fail. Thus, field can return arbitrary number of errors. Comes in handy for username (or password) validation.
-  
 
 ## Anti-patterns
 
