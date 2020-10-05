@@ -22,7 +22,7 @@ HOWEVER.  Let me dispel your concerns with this: LGNC does support HTTP transpor
 
 ## Supported languages
 
-Currently LGNC is fully supported in Swift 5.2 by [LGNKit-Swift](https://github.com/1711-Games/LGNKit-Swift).  Closest
+Currently LGNC is fully supported in Swift 5.2 by [LGNC-Swift](https://github.com/1711-Games/LGNC-Swift).  Closest
 plans are JavaScript, PHP, Java, Kotlin and Go.
 
 ## Usage
@@ -56,7 +56,7 @@ guarantee those.  When all contracts are guaranteed, you may start the server (o
 than one transport), et voilà!  You're up and running.
 
 Please refer to target language implementation for complete integration documentation and tutorials.  Currently there is
-only one implementation — [LGNKit-Swift](https://github.com/1711-Games/LGNKit-Swift).
+only one implementation — [LGNC-Swift](https://github.com/1711-Games/LGNC-Swift).
 
 ### Complete schema example
 
@@ -87,7 +87,7 @@ Services:
       Key1: Value1
       Key2: Value2
 
-     # Optional, defaults to "LGNS: 1711"
+    # Optional, defaults to "LGNS: 1711"
     Transports:
       LGNS: 1711
       HTTP: 1337
@@ -143,8 +143,7 @@ Services:
             password2:
               Type: String
               Validators:
-                IdenticalWith:
-                  Field: password1
+                IdenticalWith: password1
             boolField: Bool
             customField: Baz
             listField: List[String]
@@ -158,6 +157,7 @@ Services:
   Second:
     Contracts:
       Simple:
+        IsGETSafe: True
         Request:
           query: String
           session: Cookie
@@ -177,6 +177,7 @@ Shared/__root__.yml
 Shared/Entities/Baz.yml
 Services/First/__root__.yml
 Services/First/Contracts/DoThings.yml
+Services/Second/Contracts/Simple.yml
 Services/Second/Contracts/DoOtherThings.yml
 ```
 
@@ -264,7 +265,8 @@ ExtendedBaz:
 #### Builtin entities
 
 For your convinience, LGNC has some builtin entities, namely:
-* `Empty` which is just an entity without any fields. Comes in handy when your contract should have request or response.
+* `Empty` which is just an entity without any fields. Comes in handy when your contract should have empty request or
+  response.
 * `Cookie` which represents an HTTP cookie. If your contract is executed via HTTP, and it has a `Cookie` field in
   request, it will lookup it in headers first (which are transparently passed to contract as meta, along with request
   entity), and if it's missing in headers, it will lookup it in request, as usual. If your contract is executed via
@@ -337,14 +339,23 @@ Field may have following validators:
   username/email lookup in database, custom complex validations, calling external services for confirmation etc.  There
   are two types of a callback validator: the one with arbitrary error messages, and the one with a hardcoded list of
   allowed errors.  If you don't specify `Errors` key, it's treated as simple callback validator.  Its body must return a
-  tuple (pair) of error code (`Int`) and error message (`String`).  `Errors` is a list of objects with following
-  entries: `Code` of type `Int` and `Message` of type `String`.  Additionally, `Error` may contain `ShortName` key which
-  holds a short name of this error.  It's useful for languages with `enum` data type, like Swift.  Otherwise enum key
-  will be just an error message without whitespaces (which isn't really beautiful, let's admit that).  **Important**:
-  target language implementation _must_ ensure that a callback with an allowed list of errors can only return listed
-  errors.
+  tuple (pair) of error code (`Int`) and error message (`String`), OR a list of such tuples (multi-error). `Errors` is
+  a list of objects with following entries: `Code` of type `Int` and `Message` of type `String`.  Additionally,
+  `Error` may contain `ShortName` key which holds a short name of this error.  It's useful for languages with `enum`
+  data type, like Swift.  Otherwise enum key will be just an error message without whitespaces (which isn't really
+  beautiful, let's admit that).  **Important**: target language implementation _must_ ensure that a callback with
+  an allowed list of errors can only return listed errors.
 * `Cumulative` is another special kind validator which groups all nested validators to be executed in parallel, without
   fast fail. Thus, field can return arbitrary number of errors. Comes in handy for username (or password) validation.
+
+It is worth noting that before any fields validators are executed, LGNC will ensure that request body contains
+ONLY entries stated in request schema, otherwise it will return an error
+`{code: 422, message: "Input contains unexpected items: 'foo', 'bar'"}`.
+After that it will build a chain of validators for each field stated in request schema. Each chain (if field is not
+optional) starts with a validator which ensures that a field is present in the request body and it's of correct type,
+otherwise field validation would fail with an `{code: 512, message: "Value missing"}` error (message may vary depending
+on `MissingMessage` attribute of field). Thus, LGNC doesn't make a difference between absence of field in request data
+or invalid field type.
 
 ## Anti-patterns
 
@@ -362,6 +373,12 @@ as expected.
 Also let's not forget that schema format is rather limited and it can't model _everything_ you would like to express
 with it (for example, even though it has something like an enum (`AllowedValues` attribute), it's not translated into
 actual `enum` in Swift because of _reasons_, however you would still like it to be an `enum`).
+
+### Don't mark destructive/non-readonly contracts as `IsGETSafe`
+
+It's more of a general advice rather than LGNC-related, but still I, quite an experienced web-dev, caught myself
+a couple of times marking non-readonly contracts as GET-safe, whereas they were write-contracts, hence they were
+changing something in app state (DB or whatever), which should only be done via POST method rather than GET.
 
 ## FAQ
 
