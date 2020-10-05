@@ -348,7 +348,7 @@ Field may have following validators:
 * `Cumulative` is another special kind validator which groups all nested validators to be executed in parallel, without
   fast fail. Thus, field can return arbitrary number of errors. Comes in handy for username (or password) validation.
 
-It is worth noting that before any fields validators are executed, LGNC will ensure that: request body contains
+It is worth noting that before any fields validators are executed, LGNC will ensure that request body contains
 ONLY entries stated in request schema, otherwise it will return an error
 `{code: 422, message: "Input contains unexpected items: 'foo', 'bar'"}`.
 After that it will build a chain of validators for each field stated in request schema. Each chain (if field is not
@@ -376,7 +376,7 @@ actual `enum` in Swift because of _reasons_, however you would still like it to 
 
 ### Don't mark destructive/non-readonly contracts as `IsGETSafe`
 
-It's more of a general advice rather than LGNC-related, but still I, quite an experienced web-dev, cought myself
+It's more of a general advice rather than LGNC-related, but still I, quite an experienced web-dev, caught myself
 a couple of times marking non-readonly contracts as GET-safe, whereas they were write-contracts, hence they were
 changing something in app state (DB or whatever), which should only be done via POST method rather than GET.
 
