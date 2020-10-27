@@ -20,6 +20,49 @@ HOWEVER.  Let me dispel your concerns with this: LGNC does support HTTP transpor
 * in `POST` requests data is always sent in body as JSON or MsgPack
 * SSL must be terminated on reverse-proxy level (nginx etc.)
 
+### tl;dr
+
+LGNC is not a framework, but a convention on sending requests over networks (not just HTTP): it defines
+request/response envelope format, ensures that all participants know signatures of all contracts
+(i.e. no blackboxes/gentlemen's agreements), and guarantees that assertions above will be rock hard
+regardless of concrete language implementation.
+
+### Use cases
+
+There are two main use cases for LGNC:
+
+1. iOS app + backend: say you have a mobile application<sup id="a1">[*](#f1)</sup>, and most probably you would want
+it to communicate with your backend. Usually it's a blackbox backend on PHP/Python/Java/.NET/Go, and you send
+requests to it using Alamofire/URLSession/Swift-NIO. The problem here is that your contract with backend may break
+at any time, not to mention that you have to map every request/response to a struct/class, and sometimes response
+might be in a slightly different format (remember that "do we send booleans as true/false or 0/1?" discussion).
+LGNC allows you to just dodge all that problems, proceeding directly to business tasks. All you have to negotiate
+with backend team is a contract signature in clean and simple YAML format, after that you generate boilerplate
+contracts for your app and execute them directly (as code, not JSON or whatever), without having to bother about
+transport or format details, and in the meantime BE team does precisely the same thing: they generate boilerplate
+contracts for BE, guarantee them and just hook up business logic to them. You will never catch an "oof, I expected
+this field to be integer, and it actually is, but for some reason it is in quotes, and because of that Codable failed
+to decode response entity, _le sigh_". Even more, if you care about timings (we all hate slow webservices/apps)
+you don't have to communicate with your backend via HTTP, because LGNC offers you a much simpler and compact TCP
+protocol LGNP, which does absolutely everything you would _generally_ want from HTTP, just in a more compact way.
+Still, if certain contract must be available from HTTP, it is totally not a problem, see details below on that.
+
+2. Second most common use case for LGNC is a microservice system. Contrary to popular belief, microservice
+architecture is not an enterprise thing (a webstore may consist of auth service, merchant service, billing service,
+customer support service, and God knows what else), but people are often scared by apparent complexity of it
+(generally all API endpoints are poorly documented somewhere deep in Confluence, and basically are just
+gentlemen's agreements), whereas microservice arch is a quite reasonable approach for many (but not all) cases.
+And LGNC might be _the_ tool for building a reliable, maintainable and robust multiservice stack:
+you define all your services and contracts in one place that is common for all services (again, your services
+aren't necessarily written in one language, it just a hub, source of truth), generate skeleton contracts for the
+service you will implement, as well as contracts for services you want to communicate with, and then just execute
+those contracts as if it's a module in your service, and not a dedicated service written in a different language on
+a remote machine.
+
+<sub><b id="f1">*</b> It's not necessarily just an _iOS_ app. As we add more languages (like Kotlin),
+Android apps would also be able to use LGNC absolutely the same way as iOS/macOS ecosystem
+(and Linux) can do now. [↩](#a1)</sub>
+
 ## Supported languages
 
 Currently LGNC is fully supported in Swift 5.2 by [LGNC-Swift](https://github.com/1711-Games/LGNC-Swift).  Closest
