@@ -191,8 +191,8 @@ Services:
             customField: Baz
             listField: List[String]
             listCustomField: List[Baz]
-            mapField: List[String:Bool]
-            mapCustomField: List[String:Baz]
+            mapField: Map[String:Bool]
+            mapCustomField: Map[String:Baz]
         Response:
           Fields:
             ok: List[String]
